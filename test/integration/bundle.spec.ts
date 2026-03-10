@@ -1,6 +1,8 @@
 import path from 'node:path';
+import { mkdtemp, readFile, rm } from 'node:fs/promises';
+import os from 'node:os';
 import { describe, expect, test } from 'bun:test';
-import { bundleDocuments } from '../../src';
+import { bundleDocuments, bundleToOutputs } from '../../src';
 import { BundlerError } from '../../src/core/errors';
 
 const cwd = path.resolve(__dirname, '..', '..');
@@ -112,6 +114,35 @@ describe('bundleDocuments', () => {
     expect((secondSchemaRef.schema as Record<string, unknown>).$ref).toBe(
       '#/components/schemas/Order'
     );
+  });
+
+  test('writes multiple output formats in one run', async () => {
+    const tmpDir = await mkdtemp(path.join(os.tmpdir(), 'oapi-bundler-'));
+    const yamlOutput = path.join(tmpDir, 'openapi.yaml');
+    const jsonOutput = path.join(tmpDir, 'openapi.json');
+
+    try {
+      await bundleToOutputs(
+        ['test/fixtures/basic/root.yaml'],
+        [
+          { path: yamlOutput, format: 'yaml' },
+          { path: jsonOutput, format: 'json' },
+        ],
+        cwd,
+        {
+          validate: 'basic',
+          maxDepth: 100,
+        }
+      );
+
+      const yaml = await readFile(yamlOutput, 'utf8');
+      const json = await readFile(jsonOutput, 'utf8');
+
+      expect(yaml.includes('openapi: 3.1.0')).toBe(true);
+      expect(json.includes('"openapi": "3.1.0"')).toBe(true);
+    } finally {
+      await rm(tmpDir, { recursive: true, force: true });
+    }
   });
 
   test('fails on component conflicts', async () => {

@@ -81,6 +81,31 @@ export async function bundleToFile(
   return result;
 }
 
+export interface BundleOutputTarget {
+  path: string;
+  format: OutputFormat;
+}
+
+export async function bundleToOutputs(
+  patterns: string[],
+  outputTargets: BundleOutputTarget[],
+  cwd: string,
+  options?: Partial<BundleOptions>
+): Promise<BundleResult> {
+  if (outputTargets.length === 0) {
+    throw new BundlerError('NO_OUTPUTS', 'At least one output file is required');
+  }
+
+  const result = await bundleDocuments(patterns, cwd, options);
+
+  for (const target of outputTargets) {
+    const output = emitDocument(result.document, target.format);
+    await writeFile(target.path, output, 'utf8');
+  }
+
+  return result;
+}
+
 export async function readBundledOutput(filePath: string): Promise<string> {
   return readFile(filePath, 'utf8');
 }

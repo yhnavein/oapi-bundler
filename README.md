@@ -9,7 +9,7 @@ It is designed for real-world spec trees where files are split by domain, operat
 - Accepts multiple positional inputs (exact files and globs).
 - Merges multiple OpenAPI roots with strict conflict detection.
 - Resolves local and external `$ref`.
-- Produces a single output file (`.yaml/.yml` or `.json`).
+- Produces one or more output files (`.yaml/.yml` and/or `.json`) in a single run.
 - Enforces path parameter correctness (`in: path` gets `required: true`).
 - Handles recursive schemas safely using local refs (`#/components/schemas/*`).
 - Supports schema reuse strategies to balance readability vs deduplication.
@@ -25,13 +25,13 @@ npm install oapi-bundler
 Run via CLI:
 
 ```bash
-npx oapi-bundler <inputs...> -o <output-file>
+npx oapi-bundler <inputs...> -o <output-file...>
 ```
 
 ## CLI Usage
 
 ```bash
-oapi-bundler <inputs...> -o <output-file> [options]
+oapi-bundler <inputs...> -o <output-file...> [options]
 ```
 
 ### Inputs
@@ -45,12 +45,13 @@ Matched files are deduplicated by canonical absolute path and processed in deter
 
 ### Required Options
 
-- `-o, --output <file>`: destination output path
+- `-o, --output <files...>`: one or more destination output paths
 
 ### Optional Options
 
 - `--format <yaml|json>`
-  - If omitted, inferred from output extension.
+  - Allowed only when there is exactly one output file.
+  - If omitted, format is inferred from each output extension.
   - `.yaml`/`.yml` => `yaml`, `.json` => `json`.
 - `--validate <basic|strict>` (default: `basic`)
   - `basic`: core OpenAPI shape checks.
@@ -95,6 +96,12 @@ Single root file:
 oapi-bundler specs/root.yaml -o dist/openapi.yaml
 ```
 
+Emit both YAML and JSON in one run:
+
+```bash
+oapi-bundler specs/root.yaml -o dist/openapi.yaml dist/openapi.json
+```
+
 Glob inputs with JSON output:
 
 ```bash
@@ -128,7 +135,7 @@ For `openapi`, versions must match; for `info`, the first root document is treat
 
 ## Output Guarantees
 
-- Single output OpenAPI document.
+- Output OpenAPI documents are written for every `-o` target.
 - Deterministic ordering for stable diffs.
 - No external schema refs in final result (schema refs are local).
 - Path parameters are normalized (`required: true`).
@@ -143,7 +150,7 @@ For `openapi`, versions must match; for `info`, the first root document is treat
 You can use it as a library as well:
 
 ```ts
-import { bundleDocuments, bundleToFile } from 'oapi-bundler';
+import { bundleDocuments, bundleToFile, bundleToOutputs } from 'oapi-bundler';
 
 const result = await bundleDocuments(['specs/root.yaml'], process.cwd(), {
   outputFormat: 'yaml',
@@ -155,6 +162,18 @@ await bundleToFile(['specs/root.yaml'], 'dist/openapi.yaml', process.cwd(), {
   outputFormat: 'yaml',
   schemaReuse: 'aggressive',
 });
+
+await bundleToOutputs(
+  ['specs/root.yaml'],
+  [
+    { path: 'dist/openapi.yaml', format: 'yaml' },
+    { path: 'dist/openapi.json', format: 'json' },
+  ],
+  process.cwd(),
+  {
+    schemaReuse: 'inline',
+  }
+);
 ```
 
 ## Development

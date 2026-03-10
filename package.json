@@ -1,7 +1,20 @@
 {
   "name": "oapi-bundler",
-  "version": "0.0.1",
+  "version": "0.1.0",
   "description": "OpenAPI tool for merging together multiple spec parts into one spec document",
+  "author": {
+    "name": "Piotr Dabrowski",
+    "url": "https://github.com/yhnavein"
+  },
+  "license": "MIT",
+  "homepage": "https://github.com/yhnavein/oapi-bundler",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/yhnavein/oapi-bundler.git"
+  },
+  "bugs": {
+    "url": "https://github.com/yhnavein/oapi-bundler/issues"
+  },
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
   "bin": {
@@ -18,7 +31,17 @@
   "files": [
     "dist"
   ],
-  "author": "Piotr Dabrowski",
+  "keywords": [
+    "openapi",
+    "oapi",
+    "spec",
+    "openapi 3.0",
+    "openapi 3.1",
+    "openapi 3.2",
+    "rest",
+    "merge",
+    "bundle"
+  ],
   "dependencies": {
     "commander": "^14.0.3",
     "tinyglobby": "^0.2.15",
@@ -30,6 +53,5 @@
     "openapi-types": "^12.1.3",
     "sucrase": "3.35.1",
     "typescript": "5.9.3"
-  },
-  "license": "MIT"
+  }
 }
