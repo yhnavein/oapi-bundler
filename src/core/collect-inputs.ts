@@ -14,10 +14,7 @@ async function isFilePath(candidate: string): Promise<boolean> {
   }
 }
 
-export async function collectInputFiles(
-  patterns: string[],
-  cwd: string
-): Promise<InputFile[]> {
+export async function collectInputFiles(patterns: string[], cwd: string): Promise<InputFile[]> {
   if (patterns.length === 0) {
     throw new BundlerError('NO_INPUTS', 'At least one input path or glob is required');
   }

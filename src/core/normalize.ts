@@ -29,9 +29,7 @@ function ensurePathParametersRequired(parameters: unknown): void {
 }
 
 function extractTemplateParams(pathTemplate: string): Set<string> {
-  const matches = [...pathTemplate.matchAll(/\{([^}]+)\}/g)].map(
-    (match) => match[1]
-  );
+  const matches = [...pathTemplate.matchAll(/\{([^}]+)\}/g)].map((match) => match[1]);
   return new Set(matches);
 }
 

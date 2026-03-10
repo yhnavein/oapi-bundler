@@ -3,11 +3,7 @@ export class BundlerError extends Error {
 
   public readonly details?: Record<string, string>;
 
-  public constructor(
-    code: string,
-    message: string,
-    details?: Record<string, string>
-  ) {
+  public constructor(code: string, message: string, details?: Record<string, string>) {
     super(message);
     this.name = 'BundlerError';
     this.code = code;

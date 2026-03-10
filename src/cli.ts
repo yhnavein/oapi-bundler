@@ -3,12 +3,8 @@
 import path from 'node:path';
 import process from 'node:process';
 import { Command } from 'commander';
-import { blue, green, red, yellow } from 'nanocolors';
-import {
-  bundleToOutputs,
-  type BundleOutputTarget,
-  inferOutputFormat,
-} from './core/bundle';
+import { blue, green, red, yellow } from 'picocolors';
+import { bundleToOutputs, type BundleOutputTarget, inferOutputFormat } from './core/bundle';
 import { formatError } from './core/errors';
 import type { OutputFormat, SchemaReuseMode, ValidationMode } from './core/types';
 
@@ -34,11 +30,7 @@ program
   .option('--fail-on-warning', 'Fail if warnings are produced', false)
   .option('--max-depth <n>', 'Maximum resolver traversal depth', '200')
   .option('--debug-resolver', 'Print resolver ref traversal diagnostics', false)
-  .option(
-    '--schema-reuse <inline|minimal|aggressive>',
-    'Schema reuse strategy',
-    'inline'
-  )
+  .option('--schema-reuse <inline|minimal|aggressive>', 'Schema reuse strategy', 'inline')
   .action(async (inputs: string[], options: CliOptions) => {
     const cwd = process.cwd();
     const outputPaths = options.output.map((outputPath) => path.resolve(cwd, outputPath));

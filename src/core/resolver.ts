@@ -103,13 +103,8 @@ function stableSerialize(value: unknown): string {
   return `{${parts.join(',')}}`;
 }
 
-function mergeRefWithSiblings(
-  resolved: unknown,
-  node: Record<string, unknown>
-): unknown {
-  const siblings = Object.fromEntries(
-    Object.entries(node).filter(([key]) => key !== '$ref')
-  );
+function mergeRefWithSiblings(resolved: unknown, node: Record<string, unknown>): unknown {
+  const siblings = Object.fromEntries(Object.entries(node).filter(([key]) => key !== '$ref'));
 
   if (Object.keys(siblings).length === 0) {
     return resolved;
@@ -163,10 +158,7 @@ export async function dereferenceDocument(
     return loaded.document;
   }
 
-  async function resolveTarget(
-    ref: string,
-    currentFilePath: string
-  ): Promise<SchemaTarget> {
+  async function resolveTarget(ref: string, currentFilePath: string): Promise<SchemaTarget> {
     const { targetPath, targetPointer } = splitRef(ref, currentFilePath);
     const canonicalTargetPath = await toCanonicalPath(targetPath);
     return {
@@ -277,13 +269,7 @@ export async function dereferenceDocument(
     }
 
     for (const [key, nested] of Object.entries(value)) {
-      await analyzeValue(
-        nested,
-        currentFilePath,
-        `${pointer}/${key}`,
-        depth + 1,
-        currentSchemaKey
-      );
+      await analyzeValue(nested, currentFilePath, `${pointer}/${key}`, depth + 1, currentSchemaKey);
     }
   }
 
@@ -329,9 +315,7 @@ export async function dereferenceDocument(
     }
 
     const pointerSegments = target.pointer.split('/');
-    const baseName = sanitizeSchemaName(
-      pointerSegments[pointerSegments.length - 1] ?? 'Schema'
-    );
+    const baseName = sanitizeSchemaName(pointerSegments[pointerSegments.length - 1] ?? 'Schema');
     let candidate = baseName;
     let suffix = 2;
 
@@ -544,9 +528,7 @@ export async function dereferenceDocument(
   const components = isPlainObject(rewrittenRoot.components)
     ? (rewrittenRoot.components as JsonObject)
     : {};
-  const schemas = isPlainObject(components.schemas)
-    ? (components.schemas as JsonObject)
-    : {};
+  const schemas = isPlainObject(components.schemas) ? (components.schemas as JsonObject) : {};
 
   rewrittenRoot.components = {
     ...components,

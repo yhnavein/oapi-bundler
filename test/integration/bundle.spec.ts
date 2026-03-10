@@ -16,20 +16,18 @@ describe('bundleDocuments', () => {
     });
 
     const pathItem = result.document.paths as Record<string, unknown>;
-    const getOperation = (pathItem['/users/{id}'] as Record<string, unknown>)
-      .get as Record<string, unknown>;
+    const getOperation = (pathItem['/users/{id}'] as Record<string, unknown>).get as Record<
+      string,
+      unknown
+    >;
 
     const parameters = getOperation.parameters as Array<Record<string, unknown>>;
     expect(parameters[0].required).toBe(true);
 
     const schema = (
       (
-        (
-          (getOperation.responses as Record<string, unknown>)['200'] as Record<
-            string,
-            unknown
-          >
-        ).content as Record<string, unknown>
+        ((getOperation.responses as Record<string, unknown>)['200'] as Record<string, unknown>)
+          .content as Record<string, unknown>
       )['application/json'] as Record<string, unknown>
     ).schema as Record<string, unknown>;
 
@@ -48,8 +46,10 @@ describe('bundleDocuments', () => {
     const components = result.document.components as Record<string, unknown>;
     const schemas = components.schemas as Record<string, unknown>;
     const node = schemas.Node as Record<string, unknown>;
-    const children = (node.properties as Record<string, unknown>)
-      .children as Record<string, unknown>;
+    const children = (node.properties as Record<string, unknown>).children as Record<
+      string,
+      unknown
+    >;
     const items = children.items as Record<string, unknown>;
 
     expect(items.$ref).toBe('#/components/schemas/Node');
@@ -57,17 +57,23 @@ describe('bundleDocuments', () => {
     const responseSchema = (
       (
         (
-          ((result.document.paths as Record<string, unknown>)['/nodes/{id}'] as Record<
-            string,
-            unknown
-          >).get as Record<string, unknown>
+          (
+            (result.document.paths as Record<string, unknown>)['/nodes/{id}'] as Record<
+              string,
+              unknown
+            >
+          ).get as Record<string, unknown>
         ).responses as Record<string, unknown>
       )['200'] as Record<string, unknown>
     ).content as Record<string, unknown>;
 
     expect(
-      ((responseSchema['application/json'] as Record<string, unknown>)
-        .schema as Record<string, unknown>).$ref
+      (
+        (responseSchema['application/json'] as Record<string, unknown>).schema as Record<
+          string,
+          unknown
+        >
+      ).$ref
     ).toBe('#/components/schemas/Node');
   });
 
@@ -90,20 +96,16 @@ describe('bundleDocuments', () => {
     const firstSchemaRef = (
       (
         (
-          ((paths['/orders/{id}'] as Record<string, unknown>).get as Record<
-            string,
-            unknown
-          >).responses as Record<string, unknown>
+          ((paths['/orders/{id}'] as Record<string, unknown>).get as Record<string, unknown>)
+            .responses as Record<string, unknown>
         )['200'] as Record<string, unknown>
       ).content as Record<string, unknown>
     )['application/json'] as Record<string, unknown>;
     const secondSchemaRef = (
       (
         (
-          ((paths['/orders-copy/{id}'] as Record<string, unknown>).get as Record<
-            string,
-            unknown
-          >).responses as Record<string, unknown>
+          ((paths['/orders-copy/{id}'] as Record<string, unknown>).get as Record<string, unknown>)
+            .responses as Record<string, unknown>
         )['200'] as Record<string, unknown>
       ).content as Record<string, unknown>
     )['application/json'] as Record<string, unknown>;
@@ -156,7 +158,7 @@ describe('bundleDocuments', () => {
       }
     );
 
-    await expect(run).rejects.toBeInstanceOf(BundlerError);
-    await expect(run).rejects.toMatchObject({ code: 'COMPONENT_CONFLICT' });
+    expect(run).rejects.toBeInstanceOf(BundlerError);
+    expect(run).rejects.toMatchObject({ code: 'COMPONENT_CONFLICT' });
   });
 });

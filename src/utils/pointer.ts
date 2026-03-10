@@ -27,19 +27,15 @@ export function getValueAtPointer(root: unknown, pointer: string): unknown {
 
   for (const segment of segments) {
     if (typeof current !== 'object' || current === null) {
-      throw new BundlerError(
-        'POINTER_NOT_FOUND',
-        `Pointer segment not found: ${segment}`,
-        { pointer }
-      );
+      throw new BundlerError('POINTER_NOT_FOUND', `Pointer segment not found: ${segment}`, {
+        pointer,
+      });
     }
 
     if (!(segment in current)) {
-      throw new BundlerError(
-        'POINTER_NOT_FOUND',
-        `Pointer segment not found: ${segment}`,
-        { pointer }
-      );
+      throw new BundlerError('POINTER_NOT_FOUND', `Pointer segment not found: ${segment}`, {
+        pointer,
+      });
     }
 
     current = (current as Record<string, unknown>)[segment];
