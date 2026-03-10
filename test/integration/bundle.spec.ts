@@ -33,6 +33,85 @@ describe('bundleDocuments', () => {
 
     expect(schema.type).toBe('object');
     expect(schema.properties).toBeDefined();
+    expect(schema.$ref).toBeUndefined();
+  });
+
+  test('keeps local refs for recursive schemas', async () => {
+    const result = await bundleDocuments(['test/fixtures/cycle/root.yaml'], cwd, {
+      outputFormat: 'yaml',
+      validate: 'basic',
+      maxDepth: 100,
+    });
+
+    const components = result.document.components as Record<string, unknown>;
+    const schemas = components.schemas as Record<string, unknown>;
+    const node = schemas.Node as Record<string, unknown>;
+    const children = (node.properties as Record<string, unknown>)
+      .children as Record<string, unknown>;
+    const items = children.items as Record<string, unknown>;
+
+    expect(items.$ref).toBe('#/components/schemas/Node');
+
+    const responseSchema = (
+      (
+        (
+          ((result.document.paths as Record<string, unknown>)['/nodes/{id}'] as Record<
+            string,
+            unknown
+          >).get as Record<string, unknown>
+        ).responses as Record<string, unknown>
+      )['200'] as Record<string, unknown>
+    ).content as Record<string, unknown>;
+
+    expect(
+      ((responseSchema['application/json'] as Record<string, unknown>)
+        .schema as Record<string, unknown>).$ref
+    ).toBe('#/components/schemas/Node');
+  });
+
+  test('aggressive schema reuse deduplicates strictly equal schemas', async () => {
+    const result = await bundleDocuments(['test/fixtures/dedupe/root.yaml'], cwd, {
+      outputFormat: 'yaml',
+      validate: 'basic',
+      maxDepth: 100,
+      schemaReuse: 'aggressive',
+    });
+
+    const components = result.document.components as Record<string, unknown>;
+    const schemas = components.schemas as Record<string, unknown>;
+    const schemaNames = Object.keys(schemas);
+
+    expect(schemaNames.length).toBe(1);
+    expect(schemaNames[0]).toBe('Order');
+
+    const paths = result.document.paths as Record<string, unknown>;
+    const firstSchemaRef = (
+      (
+        (
+          ((paths['/orders/{id}'] as Record<string, unknown>).get as Record<
+            string,
+            unknown
+          >).responses as Record<string, unknown>
+        )['200'] as Record<string, unknown>
+      ).content as Record<string, unknown>
+    )['application/json'] as Record<string, unknown>;
+    const secondSchemaRef = (
+      (
+        (
+          ((paths['/orders-copy/{id}'] as Record<string, unknown>).get as Record<
+            string,
+            unknown
+          >).responses as Record<string, unknown>
+        )['200'] as Record<string, unknown>
+      ).content as Record<string, unknown>
+    )['application/json'] as Record<string, unknown>;
+
+    expect((firstSchemaRef.schema as Record<string, unknown>).$ref).toBe(
+      '#/components/schemas/Order'
+    );
+    expect((secondSchemaRef.schema as Record<string, unknown>).$ref).toBe(
+      '#/components/schemas/Order'
+    );
   });
 
   test('fails on component conflicts', async () => {

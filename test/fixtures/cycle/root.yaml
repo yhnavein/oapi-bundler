@@ -1,0 +1,31 @@
+openapi: 3.1.0
+info:
+  title: Cycle API
+  version: 1.0.0
+paths:
+  /nodes/{id}:
+    get:
+      operationId: getNode
+      parameters:
+        - name: id
+          in: path
+          schema:
+            type: string
+      responses:
+        '200':
+          description: ok
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Node'
+components:
+  schemas:
+    Node:
+      type: object
+      properties:
+        id:
+          type: string
+        children:
+          type: array
+          items:
+            $ref: '#/components/schemas/Node'

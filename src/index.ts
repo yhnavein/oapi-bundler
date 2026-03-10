@@ -5,5 +5,6 @@ export type {
   BundleResult,
   JsonObject,
   OutputFormat,
+  SchemaReuseMode,
   ValidationMode,
 } from './core/types';

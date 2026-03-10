@@ -1,0 +1,35 @@
+openapi: 3.1.0
+info:
+  title: Dedupe API
+  version: 1.0.0
+paths:
+  /orders/{id}:
+    get:
+      operationId: getOrder
+      parameters:
+        - name: id
+          in: path
+          schema:
+            type: string
+      responses:
+        '200':
+          description: ok
+          content:
+            application/json:
+              schema:
+                $ref: ./schemas/order-a.yaml#/components/schemas/Order
+  /orders-copy/{id}:
+    get:
+      operationId: getOrderCopy
+      parameters:
+        - name: id
+          in: path
+          schema:
+            type: string
+      responses:
+        '200':
+          description: ok
+          content:
+            application/json:
+              schema:
+                $ref: ./schemas/order-b.yaml#/components/schemas/Order

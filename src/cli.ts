@@ -6,7 +6,7 @@ import { Command } from 'commander';
 import { blue, green, red, yellow } from 'nanocolors';
 import { bundleToFile, inferOutputFormat } from './core/bundle';
 import { formatError } from './core/errors';
-import type { OutputFormat, ValidationMode } from './core/types';
+import type { OutputFormat, SchemaReuseMode, ValidationMode } from './core/types';
 
 interface CliOptions {
   output: string;
@@ -15,6 +15,7 @@ interface CliOptions {
   failOnWarning: boolean;
   maxDepth: string;
   debugResolver: boolean;
+  schemaReuse: SchemaReuseMode;
 }
 
 const program = new Command();
@@ -29,6 +30,11 @@ program
   .option('--fail-on-warning', 'Fail if warnings are produced', false)
   .option('--max-depth <n>', 'Maximum resolver traversal depth', '200')
   .option('--debug-resolver', 'Print resolver ref traversal diagnostics', false)
+  .option(
+    '--schema-reuse <inline|minimal|aggressive>',
+    'Schema reuse strategy',
+    'inline'
+  )
   .action(async (inputs: string[], options: CliOptions) => {
     const cwd = process.cwd();
     const outputPath = path.resolve(cwd, options.output);
@@ -39,12 +45,17 @@ program
       throw new Error('--max-depth must be a positive integer');
     }
 
+    if (!['inline', 'minimal', 'aggressive'].includes(options.schemaReuse)) {
+      throw new Error('--schema-reuse must be inline, minimal, or aggressive');
+    }
+
     const result = await bundleToFile(inputs, outputPath, cwd, {
       outputFormat,
       validate: options.validate,
       failOnWarning: options.failOnWarning,
       maxDepth,
       debugResolver: options.debugResolver,
+      schemaReuse: options.schemaReuse,
     });
 
     process.stdout.write(

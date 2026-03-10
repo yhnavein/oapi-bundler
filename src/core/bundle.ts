@@ -16,6 +16,7 @@ const DEFAULT_OPTIONS: BundleOptions = {
   failOnWarning: false,
   maxDepth: 200,
   debugResolver: false,
+  schemaReuse: 'inline',
 };
 
 export function inferOutputFormat(outputPath: string): OutputFormat {
@@ -53,6 +54,7 @@ export async function bundleDocuments(
   const dereferenced = await dereferenceDocument(merged, virtualRootPath, {
     maxDepth: mergedOptions.maxDepth,
     debugResolver: mergedOptions.debugResolver,
+    schemaReuse: mergedOptions.schemaReuse,
   });
   const { warnings } = normalizeDocument(dereferenced);
 

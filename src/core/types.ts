@@ -4,12 +4,15 @@ export type OutputFormat = 'yaml' | 'json';
 
 export type ValidationMode = 'basic' | 'strict';
 
+export type SchemaReuseMode = 'inline' | 'minimal' | 'aggressive';
+
 export interface BundleOptions {
   outputFormat: OutputFormat;
   validate: ValidationMode;
   failOnWarning: boolean;
   maxDepth: number;
   debugResolver: boolean;
+  schemaReuse: SchemaReuseMode;
 }
 
 export interface InputFile {

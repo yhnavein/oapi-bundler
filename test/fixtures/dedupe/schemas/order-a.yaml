@@ -1,0 +1,10 @@
+components:
+  schemas:
+    Order:
+      type: object
+      title: SharedOrder
+      properties:
+        id:
+          type: string
+        status:
+          type: string
