@@ -1,0 +1,33 @@
+{
+  "name": "oapi-bundler",
+  "version": "0.0.1",
+  "description": "OpenAPI tool for merging together multiple spec parts into one spec document",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "bin": {
+    "oapi-bundler": "dist/index.js"
+  },
+  "engines": {
+    "node": ">=22"
+  },
+  "scripts": {
+    "build": "sucrase ./src -d ./dist --transforms typescript,imports && bun run rm-tests",
+    "rm-tests": "find dist/ \\( -name '*.spec.js' -o -name 'types.js' \\) -type f -delete"
+  },
+  "files": [
+    "dist"
+  ],
+  "author": "Piotr Dabrowski",
+  "dependencies": {
+    "commander": "^14.0.3",
+    "yaml": "^2.8.2",
+    "nanocolors": "^0.2.0"
+  },
+  "devDependencies": {
+    "bun-types": "1.3.9",
+    "openapi-types": "^12.1.3",
+    "sucrase": "3.35.1",
+    "typescript": "5.9.3"
+  },
+  "license": "MIT"
+}
