@@ -1,0 +1,7 @@
+components:
+  parameters:
+    UserId:
+      name: id
+      in: path
+      schema:
+        type: string

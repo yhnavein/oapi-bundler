@@ -1,0 +1,17 @@
+openapi: 3.1.0
+info:
+  title: Basic API
+  version: 1.0.0
+paths:
+  /users/{id}:
+    get:
+      operationId: getUser
+      parameters:
+        - $ref: ./parts/params.yaml#/components/parameters/UserId
+      responses:
+        '200':
+          description: ok
+          content:
+            application/json:
+              schema:
+                $ref: ./parts/schemas.yaml#/components/schemas/User
