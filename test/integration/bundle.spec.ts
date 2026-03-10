@@ -3,6 +3,7 @@ import { mkdtemp, readFile, rm } from 'node:fs/promises';
 import os from 'node:os';
 import { describe, expect, test } from 'bun:test';
 import { bundleDocuments, bundleToOutputs } from '../../src';
+import { emitDocument } from '../../src/core/emit';
 import { BundlerError } from '../../src/core/errors';
 
 const cwd = path.resolve(__dirname, '..', '..');
@@ -145,6 +146,35 @@ describe('bundleDocuments', () => {
     } finally {
       await rm(tmpDir, { recursive: true, force: true });
     }
+  });
+
+  test('keeps OpenAPI-friendly top-level output key order', async () => {
+    const document = {
+      components: { schemas: {} },
+      info: { title: 'X', version: '1.0.0' },
+      paths: {},
+      openapi: '3.1.0',
+      servers: [{ url: 'https://example.com' }],
+      security: [{ bearerAuth: [] }],
+      xMeta: true,
+    };
+
+    const json = emitDocument(document, 'json');
+
+    const openapiIndex = json.indexOf('"openapi"');
+    const infoIndex = json.indexOf('"info"');
+    const serversIndex = json.indexOf('"servers"');
+    const securityIndex = json.indexOf('"security"');
+    const pathsIndex = json.indexOf('"paths"');
+    const componentsIndex = json.indexOf('"components"');
+    const xMetaIndex = json.indexOf('"xMeta"');
+
+    expect(openapiIndex).toBeLessThan(infoIndex);
+    expect(infoIndex).toBeLessThan(serversIndex);
+    expect(serversIndex).toBeLessThan(securityIndex);
+    expect(securityIndex).toBeLessThan(pathsIndex);
+    expect(pathsIndex).toBeLessThan(componentsIndex);
+    expect(componentsIndex).toBeLessThan(xMetaIndex);
   });
 
   test('fails on component conflicts', async () => {

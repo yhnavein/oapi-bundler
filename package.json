@@ -1,6 +1,6 @@
 {
   "name": "oapi-bundler",
-  "version": "0.1.1",
+  "version": "0.1.2",
   "description": "OpenAPI tool for merging together multiple spec parts into one spec document",
   "author": {
     "name": "Piotr Dabrowski",
