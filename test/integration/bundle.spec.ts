@@ -177,6 +177,26 @@ describe('bundleDocuments', () => {
     expect(componentsIndex).toBeLessThan(xMetaIndex);
   });
 
+  test('removes null operation parameters while keeping path-level parameters', async () => {
+    const result = await bundleDocuments(
+      ['test/fixtures/null-parameters/root.yaml'],
+      cwd,
+      {
+        outputFormat: 'yaml',
+        validate: 'basic',
+        maxDepth: 100,
+      }
+    );
+
+    const pathItem = (result.document.paths as Record<string, unknown>)[
+      '/organizations/{organizationId}/clients/{clientId}'
+    ] as Record<string, unknown>;
+    const patch = pathItem.patch as Record<string, unknown>;
+
+    expect(Array.isArray(pathItem.parameters)).toBe(true);
+    expect('parameters' in patch).toBe(false);
+  });
+
   test('fails on component conflicts', async () => {
     const run = bundleDocuments(
       ['test/fixtures/conflict/a.yaml', 'test/fixtures/conflict/b.yaml'],

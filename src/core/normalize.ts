@@ -28,6 +28,20 @@ function ensurePathParametersRequired(parameters: unknown): void {
   }
 }
 
+function normalizeParametersField(container: JsonObject): void {
+  if (!('parameters' in container)) {
+    return;
+  }
+
+  const parameters = container.parameters;
+  if (parameters === null || parameters === undefined) {
+    delete container.parameters;
+    return;
+  }
+
+  ensurePathParametersRequired(parameters);
+}
+
 function extractTemplateParams(pathTemplate: string): Set<string> {
   const matches = [...pathTemplate.matchAll(/\{([^}]+)\}/g)].map((match) => match[1]);
   return new Set(matches);
@@ -65,7 +79,7 @@ export function normalizeDocument(document: JsonObject): { warnings: string[] } 
     }
 
     const pathItem = pathItemValue as JsonObject;
-    ensurePathParametersRequired(pathItem.parameters);
+    normalizeParametersField(pathItem);
 
     const templateParams = extractTemplateParams(pathTemplate);
     if (templateParams.size === 0) {
@@ -81,7 +95,7 @@ export function normalizeDocument(document: JsonObject): { warnings: string[] } 
       }
 
       const operation = operationValue as JsonObject;
-      ensurePathParametersRequired(operation.parameters);
+      normalizeParametersField(operation);
       const operationParams = collectParameterNames(operation.parameters);
       const availableParams = new Set([...pathLevelParams, ...operationParams]);
 
